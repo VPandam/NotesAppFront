@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import AddNoteForm from "./Components/addNoteForm";
+import LoginForm from "./Components/loginForm";
+import { getAllNotes } from "./services/notes/notes";
+import Note from "./Components/Note";
 
 function App() {
+  const [notes, setNotes] = useState();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const notes = await getAllNotes();
+      console.log(notes);
+      setNotes(notes);
+    };
+
+    fetchNotes();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="external-container">
+        {notes &&
+          notes.map((note) => {
+            return (
+              <Note note={note} user={user} setNotes={setNotes} key={note.id} />
+            );
+          })}
+        {user ? (
+          <AddNoteForm user={user} setNotes={setNotes} />
+        ) : (
+          <LoginForm setUser={setUser} />
+        )}
+      </div>
     </div>
   );
 }
